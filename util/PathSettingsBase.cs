@@ -3,7 +3,7 @@ namespace TexasPrint.util
     public abstract class PathSettingsBase
     {
         // Méthode utilitaire protégée pour convertir un chemin
-        protected string GetAbsolutePath(string rawPath)
+        protected static string GetAbsolutePath(string rawPath)
         {
             if (string.IsNullOrWhiteSpace(rawPath))
                 return string.Empty;
