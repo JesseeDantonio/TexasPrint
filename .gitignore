@@ -1,0 +1,15 @@
+# Dossiers de compilation
+bin/
+obj/
+
+# Fichiers spécifiques à VS Code (paramètres locaux)
+.vscode/
+
+# Fichiers spécifiques à Visual Studio
+.vs/
+*.user
+*.suo
+
+# Fichiers systèmes (Mac et Windows)
+.DS_Store
+Thumbs.db
