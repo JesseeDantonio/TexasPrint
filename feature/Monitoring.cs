@@ -6,26 +6,19 @@ using TexasPrint.util;
 // using System.Threading;
 namespace TexasPrint.feature
 {
-    class Watcher
+    class Monitoring(PrinterSettings printerSettings, MonitoringSettings monitoringSettings, SumatraSettings sumatraSettings)
     {
-        private PrinterSettings printerSettings;
-        private WatcherSettings watcherSettings;
-        private SumatraSettings sumatraSettings;
-
-        public Watcher(PrinterSettings printerSettings, WatcherSettings watcherSettings, SumatraSettings sumatraSettings)
-        {
-            this.printerSettings = printerSettings;
-            this.watcherSettings = watcherSettings;
-            this.sumatraSettings = sumatraSettings;
-        }
+        private readonly PrinterSettings printerSettings = printerSettings;
+        private readonly MonitoringSettings monitoringSettings = monitoringSettings;
+        private readonly SumatraSettings sumatraSettings = sumatraSettings;
 
         public void Start()
         {
-            if (!Directory.Exists(watcherSettings.Chemin)) Directory.CreateDirectory(watcherSettings.Chemin);
+            if (!Directory.Exists(monitoringSettings.FullPath)) Directory.CreateDirectory(monitoringSettings.FullPath);
 
             FileSystemWatcher SysWatcher = new()
             {
-                Path = watcherSettings.Chemin,
+                Path = monitoringSettings.FullPath,
 
                 // On surveille uniquement les fichiers PDF
                 Filter = "*.pdf"
@@ -36,7 +29,7 @@ namespace TexasPrint.feature
 
             SysWatcher.EnableRaisingEvents = true;
 
-            Console.WriteLine($"Surveillance active sur : {watcherSettings.Chemin}");
+            Console.WriteLine($"Surveillance active sur : {monitoringSettings.FullPath}");
             Console.WriteLine("Appuyez sur 'Enter' pour quitter.");
             Console.ReadLine();
         }
@@ -76,7 +69,7 @@ namespace TexasPrint.feature
             try
             {
                 Process p = new();
-                p.StartInfo.FileName = sumatraSettings.CheminExe;
+                p.StartInfo.FileName = sumatraSettings.FullPathExe;
 
                 // Arguments pour impression silencieuse via SumatraPDF
                 // -print-to "Nom" ou -print-to-default
