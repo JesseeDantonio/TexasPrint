@@ -17,21 +17,21 @@ namespace TexasPrint
 
             IConfiguration config = builder.Build();
 
-            var printerSettings = config.GetSection("Imprimante").Get<PrinterSettings>();
-            var watcherSettings = config.GetSection("Surveillance").Get<WatcherSettings>();
+            var printerSettings = config.GetSection("Printer").Get<PrinterSettings>();
+            var monitoringSettings = config.GetSection("Monitoring").Get<MonitoringSettings>();
             var sumatraSettings = config.GetSection("Sumatra").Get<SumatraSettings>();
 
             if (printerSettings == null){return;}
 
-            if (watcherSettings == null){return;}
+            if (monitoringSettings == null){return;}
 
             if (sumatraSettings == null){return;}
 
-            Watcher watcher = new(printerSettings, watcherSettings, sumatraSettings);
+            Monitoring monitoring = new(printerSettings, monitoringSettings, sumatraSettings);
 
-            if (watcher == null) { return; }
+            if (monitoring == null) { return; }
 
-            watcher.Start();
+            monitoring.Start();
         }
     }
 
