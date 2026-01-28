@@ -60,10 +60,10 @@ class TFile()
         }
     }
 
-    public static void PrintWithCleanup(string fichier, SumatraSettings sumatraSettings, PrinterSettings printerSettings)
+    public static void PrintWithCleanup(string filePath, SumatraSettings sumatraSettings, PrinterSettings printerSettings)
     {
         // 1. Impression
-        Print(fichier, sumatraSettings, printerSettings);
+        Print(filePath, sumatraSettings, printerSettings);
 
         // 2. On planifie la suppression dans le futur
         // On ne bloque pas le thread principal
@@ -73,7 +73,7 @@ class TFile()
             // Cela couvre le temps de chargement Sumatra + Spooler + Impression réseau
             await Task.Delay(TimeSpan.FromMinutes(1));
 
-            DeleteWithRetry(fichier);
+            DeleteWithRetry(filePath);
         });
     }
 }
