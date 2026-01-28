@@ -42,7 +42,13 @@ namespace TexasPrint.feature
             // Il faut attendre qu'il soit libéré.
             if (WaitForFile(e.FullPath))
             {
-                PrintFile(e.FullPath);
+                if (printSettings.DeleteFile)
+                {
+                    TFile.PrintFileWithCleanup(e.FullPath, sumatraSettings, printerSettings);
+                    return;
+                }
+
+                TFile.PrintFile(e.FullPath, sumatraSettings, printerSettings);
             }
         }
 
