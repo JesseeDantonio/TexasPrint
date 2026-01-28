@@ -13,3 +13,5 @@ obj/
 # Fichiers systèmes (Mac et Windows)
 .DS_Store
 Thumbs.db
+
+appsettingstest.json
