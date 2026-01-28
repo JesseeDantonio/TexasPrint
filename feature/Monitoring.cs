@@ -40,11 +40,11 @@ namespace TexasPrint.feature
             {
                 if (printSettings.DeleteFile)
                 {
-                    TFile.PrintFileWithCleanup(e.FullPath, sumatraSettings, printerSettings);
+                    TFile.PrintWithCleanup(e.FullPath, sumatraSettings, printerSettings);
                     return;
                 }
 
-                TFile.PrintFile(e.FullPath, sumatraSettings, printerSettings);
+                TFile.Print(e.FullPath, sumatraSettings, printerSettings);
             }
         }
 
