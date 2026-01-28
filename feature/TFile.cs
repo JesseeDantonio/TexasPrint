@@ -32,7 +32,7 @@ class TFile()
     }
 
 
-    public static void DeleteFileWithRetry(string filePath)
+    private static void DeleteFileWithRetry(string filePath)
     {
         int attempts = 0;
         while (attempts < 5)
