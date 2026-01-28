@@ -20,14 +20,14 @@ namespace TexasPrint
             var printerSettings = config.GetSection("Printer").Get<PrinterSettings>();
             var monitoringSettings = config.GetSection("Monitoring").Get<MonitoringSettings>();
             var sumatraSettings = config.GetSection("Sumatra").Get<SumatraSettings>();
+            var printSettings = config.GetSection("Print").Get<PrintSettings>();
 
-            if (printerSettings == null){return;}
+            if (printerSettings == null) { return; }
+            if (monitoringSettings == null) { return; }
+            if (sumatraSettings == null) { return; }
+            if (printSettings == null) { return; }
 
-            if (monitoringSettings == null){return;}
-
-            if (sumatraSettings == null){return;}
-
-            Monitoring monitoring = new(printerSettings, monitoringSettings, sumatraSettings);
+            Monitoring monitoring = new(monitoringSettings, sumatraSettings, printerSettings, printSettings);
 
             if (monitoring == null) { return; }
 
