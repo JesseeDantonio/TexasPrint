@@ -6,12 +6,8 @@ using TexasPrint.util;
 // using System.Threading;
 namespace TexasPrint.feature
 {
-    class Monitoring(PrinterSettings printerSettings, MonitoringSettings monitoringSettings, SumatraSettings sumatraSettings)
+    class Monitoring(MonitoringSettings monitoringSettings, SumatraSettings sumatraSettings, PrinterSettings printerSettings, PrintSettings printSettings)
     {
-        private readonly PrinterSettings printerSettings = printerSettings;
-        private readonly MonitoringSettings monitoringSettings = monitoringSettings;
-        private readonly SumatraSettings sumatraSettings = sumatraSettings;
-
         public void Start()
         {
             if (!Directory.Exists(monitoringSettings.FullPath)) Directory.CreateDirectory(monitoringSettings.FullPath);
@@ -68,31 +64,6 @@ namespace TexasPrint.feature
                 }
             }
             return false;
-        }
-
-        private void PrintFile(string fichier)
-        {
-            try
-            {
-                Process p = new();
-                p.StartInfo.FileName = sumatraSettings.FullPathExe;
-
-                // Arguments pour impression silencieuse via SumatraPDF
-                // -print-to "Nom" ou -print-to-default
-                string args = $"-silent -print-to \"{printerSettings.Name}\" \"{fichier}\"";
-                if (string.IsNullOrEmpty(printerSettings.Name)) args = $"-silent -print-to-default \"{fichier}\"";
-
-                p.StartInfo.Arguments = args;
-                p.StartInfo.CreateNoWindow = true;
-                p.StartInfo.UseShellExecute = false;
-                p.Start();
-
-                Console.WriteLine($" -> Commande d'impression envoyée pour {Path.GetFileName(fichier)}");
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Erreur : {ex.Message}");
-            }
         }
     }
 }
