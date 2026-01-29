@@ -1,16 +1,25 @@
 using System.Diagnostics;
+using System.Runtime.Versioning;
 using TexasPrint.util;
+using PrinterSettings = TexasPrint.util.PrinterSettings;
 
 namespace TexasPrint.feature;
 
 class TFile()
 {
-
-    public static void Print(string fichier, SumatraSettings sumatraSettings, PrinterSettings printerSettings)
+    public static int Print(string fichier, SumatraSettings sumatraSettings, PrinterSettings printerSettings)
     {
+        Process p = new();
         try
         {
-            Process p = new();
+            if (!string.IsNullOrEmpty(printerSettings.Name))
+            {
+                if (!TPrinter.IsExist(printerSettings))
+                {
+                    throw new ArgumentException($"L'imprimante demandée n'existe pas : '{printerSettings.Name}'");
+                }         
+            }
+
             p.StartInfo.FileName = sumatraSettings.FullPathExe;
 
             // Arguments pour impression silencieuse via SumatraPDF
@@ -24,10 +33,22 @@ class TFile()
             p.Start();
 
             Console.WriteLine($" -> Commande d'impression envoyée pour {Path.GetFileName(fichier)}");
+
+            if (p.WaitForExit(5000))
+            {
+                // Console.WriteLine($"{p.ExitCode}");
+                if (p.ExitCode != 0)
+                {
+                    throw new Exception("Une erreur est survenue avec SumatraPDF.");
+                }
+            }
+
+            return p.ExitCode;
         }
         catch (Exception ex)
         {
             Console.WriteLine($"Erreur : {ex.Message}");
+            return -1;
         }
     }
 
@@ -63,7 +84,13 @@ class TFile()
     public static void PrintWithCleanup(string filePath, SumatraSettings sumatraSettings, PrinterSettings printerSettings)
     {
         // 1. Impression
-        Print(filePath, sumatraSettings, printerSettings);
+        var exitCode = Print(filePath, sumatraSettings, printerSettings);
+
+        if (exitCode != 0)
+        {
+            Console.WriteLine($"Impossible de supprimer : {filePath} suite à une erreur d'impression.");
+            return;
+        }
 
         // 2. On planifie la suppression dans le futur
         // On ne bloque pas le thread principal
@@ -72,7 +99,6 @@ class TFile()
             // On attend généreusement
             // Cela couvre le temps de chargement Sumatra + Spooler + Impression réseau
             await Task.Delay(TimeSpan.FromMinutes(1));
-
             DeleteWithRetry(filePath);
         });
     }
