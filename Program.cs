@@ -8,6 +8,7 @@ namespace TexasPrint
 {
     class Program
     {
+        static readonly Monitoring[] monitorings = [];
 
         static void Main()
         {
@@ -17,21 +18,26 @@ namespace TexasPrint
 
             IConfiguration config = builder.Build();
 
-            var printerSettings = config.GetSection("Printer").Get<PrinterSettings>();
-            var monitoringSettings = config.GetSection("Monitoring").Get<MonitoringSettings>();
-            var sumatraSettings = config.GetSection("Sumatra").Get<SumatraSettings>();
-            var printSettings = config.GetSection("Print").Get<PrintSettings>();
+            foreach (IConfigurationSection section in config.GetChildren())
+            {
+                var appConfig = section.Get<AppConfigSettings>();
 
-            if (printerSettings == null) { return; }
-            if (monitoringSettings == null) { return; }
-            if (sumatraSettings == null) { return; }
-            if (printSettings == null) { return; }
+                if (appConfig != null)
+                {
+                    Console.WriteLine($"{section.Key} initialisée");
+                    Console.WriteLine($"{appConfig.Monitoring.FullPath}");
+                    Monitoring monitoring = new(appConfig.Monitoring, appConfig.Sumatra, appConfig.Printer, appConfig.Print);
 
-            Monitoring monitoring = new(monitoringSettings, sumatraSettings, printerSettings, printSettings);
+                    if (monitoring != null)
+                    {
+                        monitoring.Start();
+                        monitorings.Append(monitoring);
+                    }
+                }
+            }
 
-            if (monitoring == null) { return; }
-
-            monitoring.Start();
+            Console.WriteLine("Appuyez sur 'Enter' pour quitter.");
+            Console.ReadLine();
         }
     }
 
