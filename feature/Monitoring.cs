@@ -1,9 +1,4 @@
-
-// using System;
-using System.Diagnostics;
 using TexasPrint.util;
-// using System.IO;
-// using System.Threading;
 namespace TexasPrint.feature
 {
     class Monitoring(MonitoringSettings monitoringSettings, SumatraSettings sumatraSettings, PrinterSettings printerSettings, PrintSettings printSettings)

@@ -1,5 +1,4 @@
 using System.Diagnostics;
-using System.Runtime.Versioning;
 using TexasPrint.util;
 using PrinterSettings = TexasPrint.util.PrinterSettings;
 
