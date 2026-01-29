@@ -24,10 +24,7 @@ namespace TexasPrint.feature
             SysWatcher.Created += OnFileCreated;
 
             SysWatcher.EnableRaisingEvents = true;
-
             Console.WriteLine($"Surveillance active sur : {monitoringSettings.FullPath}");
-            Console.WriteLine("Appuyez sur 'Enter' pour quitter.");
-            Console.ReadLine();
         }
 
         private void OnFileCreated(object sender, FileSystemEventArgs e)
