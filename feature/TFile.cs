@@ -106,7 +106,6 @@ class TFile()
                     File.Delete(filePath);
                     Console.WriteLine($" -> Fichier supprimé : {filePath}");
                 }
-                return;
             }
             catch (IOException)
             {
@@ -117,7 +116,6 @@ class TFile()
             catch (Exception ex)
             {
                 Console.WriteLine($"Impossible de supprimer : {ex.Message}");
-                return;
             }
         }
     }
