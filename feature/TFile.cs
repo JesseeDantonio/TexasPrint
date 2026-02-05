@@ -1,12 +1,14 @@
 using System.Diagnostics;
+using System;
 using TexasPrint.util;
 using PrinterSettings = TexasPrint.util.PrinterSettings;
+using System.Drawing;
 
 namespace TexasPrint.feature;
 
 class TFile()
 {
-    public static int Print(string fichier, SumatraSettings sumatraSettings, PrinterSettings printerSettings)
+    public static int Print(string fichier, SumatraSettings sumatraSettings, PrinterSettings printerSettings, MonitoringSettings monitoringSettings)
     {
         Process p = new();
         try
@@ -16,7 +18,7 @@ class TFile()
                 if (!TPrinter.IsExist(printerSettings))
                 {
                     throw new ArgumentException($"L'imprimante demandée n'existe pas : '{printerSettings.Name}'");
-                }         
+                }
             }
 
             p.StartInfo.FileName = sumatraSettings.FullPathExe;
@@ -47,8 +49,48 @@ class TFile()
         catch (Exception ex)
         {
             Console.WriteLine($"Erreur : {ex.Message}");
+            string pathCombin = Path.Combine(monitoringSettings.FullPath, "Failed");
+
+            using (StreamWriter sw = File.CreateText(pathCombin + "\\" + $"log_{Path.GetFileNameWithoutExtension(Path.GetFileName(fichier))}_{DateTime.Now.ToString("MM-dd-yyyy")}.txt"))
+            {
+                sw.WriteLine($"{DateTime.Now} - {ex.Message}");
+            }
+
+            bool resp = MoveWithRetry(fichier, pathCombin + "\\" + Path.GetFileName(fichier));
+            if (resp)
+            {
+                Console.WriteLine($" -> Fichier sauvegardé : {Path.GetFileName(fichier)}");
+            }
             return -1;
         }
+    }
+
+    private static bool MoveWithRetry(string filePath, string destPath)
+    {
+        int attempts = 0;
+        while (attempts < 5)
+        {
+            try
+            {
+                if (File.Exists(filePath))
+                {
+                    File.Move(filePath, destPath);
+                    Console.WriteLine($" -> Fichier déplacé : {destPath}");
+                    return true;
+                }
+            }
+            catch (IOException)
+            {
+                // Le fichier est probablement encore verrouillé par le système
+                attempts++;
+                Thread.Sleep(1000); // Attendre 1 seconde avant de réessayer
+            }
+            catch (Exception err)
+            {
+                Console.WriteLine($"Impossible de déplacer : {err.Message}");
+            }
+        }
+        return false;
     }
 
 
@@ -80,10 +122,10 @@ class TFile()
         }
     }
 
-    public static void PrintWithCleanup(string filePath, SumatraSettings sumatraSettings, PrinterSettings printerSettings)
+    public static void PrintWithCleanup(string filePath, SumatraSettings sumatraSettings, PrinterSettings printerSettings, MonitoringSettings monitoringSettings)
     {
         // 1. Impression
-        var exitCode = Print(filePath, sumatraSettings, printerSettings);
+        var exitCode = Print(filePath, sumatraSettings, printerSettings, monitoringSettings);
 
         if (exitCode != 0)
         {

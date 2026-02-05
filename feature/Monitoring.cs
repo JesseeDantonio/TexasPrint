@@ -6,6 +6,9 @@ namespace TexasPrint.feature
         public void Start()
         {
             if (!Directory.Exists(monitoringSettings.FullPath)) Directory.CreateDirectory(monitoringSettings.FullPath);
+            string pathCombin = Path.Combine(monitoringSettings.FullPath, "Failed");
+            Directory.CreateDirectory(pathCombin);
+            if (!Directory.Exists(pathCombin)) Directory.CreateDirectory(pathCombin);
 
             FileSystemWatcher SysWatcher = new()
             {
@@ -32,11 +35,11 @@ namespace TexasPrint.feature
             {
                 if (printSettings.DeleteFile)
                 {
-                    TFile.PrintWithCleanup(e.FullPath, sumatraSettings, printerSettings);
+                    TFile.PrintWithCleanup(e.FullPath, sumatraSettings, printerSettings, monitoringSettings);
                     return;
                 }
 
-                TFile.Print(e.FullPath, sumatraSettings, printerSettings);
+                TFile.Print(e.FullPath, sumatraSettings, printerSettings, monitoringSettings);
             }
         }
 
