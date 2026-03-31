@@ -42,6 +42,8 @@ class TFile()
                 {
                     throw new Exception("Une erreur est survenue avec SumatraPDF.");
                 }
+
+                MoveWithRetry(fichier, Path.Combine(monitoringSettings.FullPath, "Success", Path.GetFileName(fichier)));
             }
 
             return p.ExitCode;

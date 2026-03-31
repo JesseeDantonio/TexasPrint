@@ -9,6 +9,10 @@ namespace TexasPrint.feature
             string pathCombin = Path.Combine(monitoringSettings.FullPath, "Failed");
             Directory.CreateDirectory(pathCombin);
             if (!Directory.Exists(pathCombin)) Directory.CreateDirectory(pathCombin);
+            
+            pathCombin = Path.Combine(monitoringSettings.FullPath, "Success");
+            Directory.CreateDirectory(pathCombin);
+            if (!Directory.Exists(pathCombin)) Directory.CreateDirectory(pathCombin);
 
             FileSystemWatcher SysWatcher = new()
             {
