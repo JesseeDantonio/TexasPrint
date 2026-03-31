@@ -11,6 +11,9 @@ class TFile()
     public static int Print(string fichier, SumatraSettings sumatraSettings, PrinterSettings printerSettings, MonitoringSettings monitoringSettings)
     {
         Process p = new();
+        string nomFichier = Path.GetFileNameWithoutExtension(fichier);
+        string extension = Path.GetExtension(fichier);  // ".pdf"
+        string guid = Guid.NewGuid().ToString("N");
         try
         {
             if (!string.IsNullOrEmpty(printerSettings.Name))
@@ -43,7 +46,8 @@ class TFile()
                     throw new Exception("Une erreur est survenue avec SumatraPDF.");
                 }
 
-                MoveWithRetry(fichier, Path.Combine(monitoringSettings.FullPath, "Success", Path.GetFileName(fichier)));
+
+                MoveWithRetry(fichier, Path.Combine(monitoringSettings.FullPath,"Success",$"{nomFichier}_{guid}{extension}"));
             }
 
             return p.ExitCode;
@@ -51,7 +55,7 @@ class TFile()
         catch (Exception ex)
         {
             Console.WriteLine($"Erreur : {ex.Message}");
-            string pathCombin = Path.Combine(monitoringSettings.FullPath, "Failed");
+            string pathCombin = Path.Combine(monitoringSettings.FullPath, "Failed",$"{nomFichier}_{guid}{extension}");
 
             using (StreamWriter sw = File.CreateText(pathCombin + "\\" + $"log_{Path.GetFileNameWithoutExtension(Path.GetFileName(fichier))}_{DateTime.Now.ToString("MM-dd-yyyy")}.txt"))
             {
