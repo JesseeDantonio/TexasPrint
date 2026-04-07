@@ -22,6 +22,12 @@ namespace TexasPrint.feature
                 Filter = "*.pdf"
             };
 
+            foreach (string fileName in Directory.GetFiles(monitoringSettings.FullPath, "*.pdf"))
+            {
+                Console.WriteLine($"Fichier trouvé au démarrage : {Path.GetFileName(fileName)}");
+                TFile.Print(fileName, sumatraSettings, printerSettings, monitoringSettings);
+            }
+
             // On déclenche l'événement quand un fichier est créé ou copié
             SysWatcher.Created += OnFileCreated;
 
