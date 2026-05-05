@@ -22,17 +22,25 @@ namespace TexasPrint.feature
                 Filter = "*.pdf"
             };
 
-            foreach (string fileName in Directory.GetFiles(monitoringSettings.FullPath, "*.pdf"))
-            {
-                Console.WriteLine($"Fichier trouvé au démarrage : {Path.GetFileName(fileName)}");
-                TFile.Print(fileName, sumatraSettings, printerSettings, monitoringSettings);
-            }
 
             // On déclenche l'événement quand un fichier est créé ou copié
             SysWatcher.Created += OnFileCreated;
 
             SysWatcher.EnableRaisingEvents = true;
             Console.WriteLine($"Surveillance active sur : {monitoringSettings.FullPath}");
+            
+            try
+            {
+                foreach (string fileName in Directory.GetFiles(monitoringSettings.FullPath, "*.pdf"))
+                {
+                    Console.WriteLine($"Fichier trouvé au démarrage : {Path.GetFileName(fileName)}");
+                    TFile.Print(fileName, sumatraSettings, printerSettings, monitoringSettings);
+                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine($"Erreur : {e.Message}");
+            }
         }
 
         private void OnFileCreated(object sender, FileSystemEventArgs e)
@@ -65,7 +73,7 @@ namespace TexasPrint.feature
                 catch (IOException)
                 {
                     // Le fichier est verrouillé, on attend un peu
-                    Thread.Sleep(500);
+                    Thread.Sleep(1000);
                 }
             }
             return false;
