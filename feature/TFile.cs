@@ -1,8 +1,6 @@
 using System.Diagnostics;
-using System;
 using TexasPrint.util;
 using PrinterSettings = TexasPrint.util.PrinterSettings;
-using System.Drawing;
 
 namespace TexasPrint.feature;
 
