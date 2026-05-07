@@ -1,43 +1,39 @@
 ﻿// See https://aka.ms/new-console-template for more information
-using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using TexasPrint.feature;
-using TexasPrint.util;
-
 
 namespace TexasPrint
 {
     class Program
     {
-        static readonly Monitoring[] monitorings = [];
 
-        static void Main()
+        static async Task Main(string[] args)
         {
-            var builder = new ConfigurationBuilder()
-                .SetBasePath(Directory.GetCurrentDirectory())
-                .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
+            var builder = Host.CreateDefaultBuilder(args);
 
-            IConfiguration config = builder.Build();
-
-            foreach (IConfigurationSection section in config.GetChildren())
+            builder.ConfigureServices(services =>
             {
-                var appConfig = section.Get<AppConfigSettings>();
+                // Enregistre le service d'arrière-plan
+                services.AddHostedService<PrintWorker>();
+            });
 
-                if (appConfig != null)
-                {
-                    Console.WriteLine($"{section.Key} initialisée");
-                    Console.WriteLine($"{appConfig.Monitoring.FullPath}");
-                    Monitoring monitoring = new(appConfig.Monitoring, appConfig.Sumatra, appConfig.Printer, appConfig.Print);
+            var host = builder.Build();
 
-                    if (monitoring != null)
-                    {
-                        monitoring.Start();
-                        monitorings.Append(monitoring);
-                    }
-                }
-            }
+            // 1. On démarre le service d'arrière-plan (sans bloquer le reste du code)
+            await host.StartAsync();
 
-            Console.WriteLine("Appuyez sur 'Enter' pour quitter.");
-            Console.ReadLine();
+            // 2. On prépare l'interface graphique pour l'icône
+            ApplicationConfiguration.Initialize();
+
+            // 3. On récupère le gestionnaire de cycle de vie pour pouvoir arrêter le service depuis l'icône
+            var appLifetime = host.Services.GetRequiredService<IHostApplicationLifetime>();
+
+            // 4. On lance l'icône dans la zone de notification (ceci bloque jusqu'à ce qu'on clique sur "Arrêter")
+            Application.Run(new TrayIconService(appLifetime));
+
+            // 5. Quand l'icône est fermée, on s'assure que le service s'arrête proprement
+            await host.StopAsync();
         }
     }
 
