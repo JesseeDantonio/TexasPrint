@@ -15,7 +15,6 @@ dotnet add package
 - Microsoft.Extensions.Configuration.Json
 - Microsoft.Extensions.Configuration.Binder
 - Microsoft.Extensions.Hosting;
-- System.Drawing.Common
 
 Pack Extension VSCode à installer
 
