@@ -21,7 +21,7 @@ public class TrayIconService : ApplicationContext
         {
             // IMPORTANT : Mettre le chemin vers un vrai fichier .ico
             // ou utilise SystemIcons.Application pour tester
-            Icon = SystemIcons.Application, 
+            Icon = new Icon(Path.Combine(AppContext.BaseDirectory, "icon.ico")), 
             ContextMenuStrip = contextMenu,
             Visible = true,
             Text = "TexasPrint - Service en cours"
