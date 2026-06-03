@@ -11,8 +11,8 @@ public class PrintWorker : BackgroundService
     {
 
         var builder = new ConfigurationBuilder()
-            .SetBasePath(Directory.GetCurrentDirectory())
-            .AddJsonFile("appsettingstest.json", optional: false, reloadOnChange: true);
+            .SetBasePath(AppDomain.CurrentDomain.BaseDirectory)
+            .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
 
         IConfiguration config = builder.Build();
 
