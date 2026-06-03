@@ -18,6 +18,8 @@ class TFile()
             {
                 if (!TPrinter.IsExist(printerSettings))
                 {
+                    string errorMsg = $"L'imprimante demandée n'existe pas : '{printerSettings.Name}'";
+                    Console.WriteLine(errorMsg);
                     throw new ArgumentException($"L'imprimante demandée n'existe pas : '{printerSettings.Name}'");
                 }
             }
@@ -34,13 +36,14 @@ class TFile()
             p.StartInfo.UseShellExecute = false;
             p.Start();
 
-            Console.WriteLine($" -> Commande d'impression envoyée pour {Path.GetFileName(fichier)}");
+            TLog.Write($"Commande d'impression envoyée pour {Path.GetFileName(fichier)}");
 
             if (p.WaitForExit(5000))
             {
                 // Console.WriteLine($"{p.ExitCode}");
                 if (p.ExitCode != 0)
                 {
+                    TLog.Write($"Erreur d'impression pour {Path.GetFileName(fichier)} : Code de sortie {p.ExitCode}");
                     throw new Exception("Une erreur est survenue avec SumatraPDF.");
                 }
 
@@ -52,7 +55,7 @@ class TFile()
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"Erreur : {ex.Message}");
+            TLog.Write($"Erreur : {ex.Message}");
             string pathCombin = Path.Combine(monitoringSettings.FullPath, "Failed",$"{nomFichier}_{guid}{extension}");
 
             using (StreamWriter sw = File.CreateText(pathCombin + "\\" + $"log_{Path.GetFileNameWithoutExtension(Path.GetFileName(fichier))}_{DateTime.Now.ToString("MM-dd-yyyy")}.txt"))
@@ -63,7 +66,7 @@ class TFile()
             bool resp = MoveWithRetry(fichier, pathCombin + "\\" + Path.GetFileName(fichier));
             if (resp)
             {
-                Console.WriteLine($" -> Fichier sauvegardé : {Path.GetFileName(fichier)}");
+                TLog.Write($" -> Fichier sauvegardé : {Path.GetFileName(fichier)}");
             }
             return -1;
         }
@@ -79,7 +82,7 @@ class TFile()
                 if (File.Exists(filePath))
                 {
                     File.Move(filePath, destPath);
-                    Console.WriteLine($" -> Fichier déplacé : {destPath}");
+                    TLog.Write($" -> Fichier déplacé : {destPath}");
                     return true;
                 }
             }
@@ -91,14 +94,14 @@ class TFile()
             }
             catch (Exception err)
             {
-                Console.WriteLine($"Impossible de déplacer : {err.Message}");
+                TLog.Write($"Impossible de déplacer : {err.Message}");
             }
         }
         return false;
     }
 
 
-    private static void DeleteWithRetry(string filePath)
+    public static void DeleteWithRetry(string filePath)
     {
         int attempts = 0;
         while (attempts < 5)
@@ -108,7 +111,7 @@ class TFile()
                 if (File.Exists(filePath))
                 {
                     File.Delete(filePath);
-                    Console.WriteLine($" -> Fichier supprimé : {filePath}");
+                    TLog.Write($" -> Fichier supprimé : {filePath}");
                 }
             }
             catch (IOException)
@@ -119,7 +122,7 @@ class TFile()
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Impossible de supprimer : {ex.Message}");
+                TLog.Write($"Impossible de supprimer : {ex.Message}");
             }
         }
     }
@@ -131,7 +134,7 @@ class TFile()
 
         if (exitCode != 0)
         {
-            Console.WriteLine($"Impossible de supprimer : {filePath} suite à une erreur d'impression.");
+            TLog.Write($"Impossible de supprimer : {filePath} suite à une erreur d'impression.");
             return;
         }
 
