@@ -29,7 +29,28 @@ public class PrintWorker : BackgroundService
                 if (monitoring != null)
                 {
                     monitoring.Start();
-                    monitorings.Append(monitoring);
+                    monitorings.Add(monitoring);
+                }
+            }
+        }
+
+        TLog.Write($"Nombre de surveillances actives : {monitorings.Count}");
+
+        if (DateTime.Now.DayOfWeek == DayOfWeek.Thursday)
+        {
+            TLog.Write("Suppression des anciens logs...");
+            string logDirectory = Path.Combine(Directory.GetCurrentDirectory(), "logs");
+
+            foreach (string file in Directory.GetFiles(logDirectory))
+            {
+                try
+                {
+                    TFile.DeleteWithRetry(file);
+                    TLog.Write($" -> Ancien log supprimé : {Path.GetFileName(file)}");
+                }
+                catch (Exception ex)
+                {
+                    TLog.Write($"Impossible de supprimer le log : {ex.Message}");
                 }
             }
         }
