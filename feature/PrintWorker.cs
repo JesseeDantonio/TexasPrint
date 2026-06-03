@@ -16,6 +16,8 @@ public class PrintWorker : BackgroundService
 
         IConfiguration config = builder.Build();
 
+        TLog.Write("Service démarré");
+
         foreach (IConfigurationSection section in config.GetChildren())
         {
             var appConfig = section.Get<AppConfigSettings>();
