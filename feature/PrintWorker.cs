@@ -6,7 +6,7 @@ namespace TexasPrint.feature;
 
 public class PrintWorker : BackgroundService
 {
-    static readonly Monitoring[] monitorings = [];
+    static readonly List<Monitoring> monitorings = [];
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
 
