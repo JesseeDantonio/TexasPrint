@@ -27,25 +27,26 @@ namespace TexasPrint.feature
             SysWatcher.Created += OnFileCreated;
 
             SysWatcher.EnableRaisingEvents = true;
-            Console.WriteLine($"Surveillance active sur : {monitoringSettings.FullPath}");
+
+            TLog.Write($"Surveillance active sur : {monitoringSettings.FullPath}");
             
             try
             {
                 foreach (string fileName in Directory.GetFiles(monitoringSettings.FullPath, "*.pdf"))
                 {
-                    Console.WriteLine($"Fichier trouvé au démarrage : {Path.GetFileName(fileName)}");
+                    TLog.Write($"Fichier trouvé au démarrage : {Path.GetFileName(fileName)}");
                     TFile.Print(fileName, sumatraSettings, printerSettings, monitoringSettings);
                 }
             }
             catch (Exception e)
             {
-                Console.WriteLine($"Erreur : {e.Message}");
+                TLog.Write($"Erreur : {e.Message}");
             }
         }
 
         private void OnFileCreated(object sender, FileSystemEventArgs e)
         {
-            Console.WriteLine($"Nouveau fichier détecté : {e.Name}");
+            TLog.Write($"Nouveau fichier détecté : {e.Name}");
 
             // IMPORTANT : Quand l'événement se déclenche, le fichier est peut-être encore en cours de copie.
             // Il faut attendre qu'il soit libéré.
